@@ -1,3 +1,13 @@
+#macos
+
+*.DS_Store
+/build
+test.c
+
+#lib
+tinytga.c
+tinytga.h
+
 # Prerequisites
 *.d
 
