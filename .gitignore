@@ -7,10 +7,6 @@ test.c
 #lib
 tinytga.c
 tinytga.h
-# from tinytga
-geometry.h
-model.cpp
-model.h
 
 # Prerequisites
 *.d
