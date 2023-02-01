@@ -7,6 +7,8 @@ test.c
 #lib
 tinytga.c
 tinytga.h
+tinyobj.h
+tinyobj.c
 
 # Prerequisites
 *.d
