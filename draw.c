@@ -126,9 +126,9 @@ void draw_triangle(tt_image *image, Vec2i *pts, tt_color color) {
 		bboxmax.y = (int)fminf((float)clamp.y, fmaxf((float)bboxmax.y, (float)pts[i].y));
 	}
 
-	printf("[DEV]min: (%d, %d)\n", bboxmin.x, bboxmin.y);
-	printf("[DEV]max: (%d, %d)\n", bboxmax.x, bboxmax.y);
-	printf("[DEV]clamp: (%d, %d)\n", clamp.x, clamp.y);
+	// printf("[DEV]min: (%d, %d)\n", bboxmin.x, bboxmin.y);
+	// printf("[DEV]max: (%d, %d)\n", bboxmax.x, bboxmax.y);
+	// printf("[DEV]clamp: (%d, %d)\n", clamp.x, clamp.y);
 
 	Vec2i P;
 	for (P.x = bboxmin.x; P.x <= bboxmax.x; P.x++) {
@@ -137,8 +137,8 @@ void draw_triangle(tt_image *image, Vec2i *pts, tt_color color) {
 			if (bc_screen.x < 0 || bc_screen.y < 0 || bc_screen.z < 0) {
 				continue;
 			}
-			printf("[DEV]u = (%f, %f, %f)\n", bc_screen.x, bc_screen.y, bc_screen.z);
-			printf("[DEV]P.x: %d\tP.y: %d\tin\n", P.x, P.y);
+			// printf("[DEV]u = (%f, %f, %f)\n", bc_screen.x, bc_screen.y, bc_screen.z);
+			// printf("[DEV]P.x: %d\tP.y: %d\tin\n", P.x, P.y);
 			tt_set_color(image, P.x-1, P.y-1, color);
 		}
 
