@@ -1,4 +1,5 @@
 #include "geometry.h"
+#include <math.h>
 
 Vec2f vec2f_make(float x, float y) {
 	Vec2f result = {
@@ -101,13 +102,8 @@ Vec3f vec3f_multiply_f(Vec3f v1, float f) {
 	return result;
 }
 
-Vec3f vec3f_multiply_v(Vec3f v1, Vec3f v2) {
-	Vec3f result = {
-		.x = v1.x * v2.x,
-		.y = v1.y * v2.y,
-		.z = v1.z * v2.z
-	};
-	return result;
+float vec3f_multiply_v(Vec3f v1, Vec3f v2) {
+	return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 }
 
 Vec3f vec3f_cross(Vec3f a, Vec3f b) {
@@ -117,6 +113,11 @@ Vec3f vec3f_cross(Vec3f a, Vec3f b) {
 		.z = a.x*b.y-b.x*a.y
 	};
 	return result;
+}
+
+void vec3f_normalize(Vec3f *a, float l) {
+	float num = l/sqrtf(a->x*a->x+a->y*a->y+a->z*a->z);
+	*a = vec3f_multiply_f(*a, num);
 }
 
 
@@ -156,13 +157,8 @@ Vec3i vec3i_multiply_f(Vec3i v1, float f) {
 	return result;
 }
 
-Vec3i vec3i_multiply_v(Vec3i v1, Vec3i v2) {
-	Vec3i result = {
-		.x = v1.x * v2.x,
-		.y = v1.y * v2.y,
-		.z = v1.z * v2.z
-	};
-	return result;
+int vec3i_multiply_v(Vec3i v1, Vec3i v2) {
+	return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 }
 
 Vec3i vec3i_cross(Vec3i a, Vec3i b) {
@@ -173,5 +169,11 @@ Vec3i vec3i_cross(Vec3i a, Vec3i b) {
 	};
 	return result;
 }
+
+void vec3i_normalize(Vec3i *a, int l) {
+	float num = l/sqrt(a->x*a->x+a->y*a->y+a->z*a->z);
+	*a = vec3i_multiply_f(*a, num);
+}
+
 
 

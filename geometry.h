@@ -42,9 +42,11 @@ Vec3f vec3f_minus(Vec3f v1, Vec3f v2);
 
 Vec3f vec3f_multiply_f(Vec3f v1, float f);
 
-Vec3f vec3f_multiply_v(Vec3f v1, Vec3f v2);
+float vec3f_multiply_v(Vec3f v1, Vec3f v2);
 
 Vec3f vec3f_cross(Vec3f a, Vec3f b);
+
+void vec3f_normalize(Vec3f *a, float l);
 
 typedef struct {
 	int x;
@@ -60,8 +62,9 @@ Vec3i vec3i_minus(Vec3i v1, Vec3i v2);
 
 Vec3i vec3i_multiply_f(Vec3i v1, float f);
 
-Vec3i vec3i_multiply_v(Vec3i v1, Vec3i v2);
+int vec3i_multiply_v(Vec3i v1, Vec3i v2);
 
 Vec3i vec3i_cross(Vec3i a, Vec3i b);
 
+void vec3i_normalize(Vec3i *a, int l);
 #endif
