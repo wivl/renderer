@@ -2,7 +2,7 @@
 
 *.DS_Store
 /build
-test.c
+# test.c
 
 #lib
 tinytga.c
