@@ -25,7 +25,7 @@ Vec2f vec2f_minus(Vec2f v1, Vec2f v2) {
 	return result;
 }
 
-Vec2f vec2f_mutiply(Vec2f v1, float f) {
+Vec2f vec2f_multiply(Vec2f v1, float f) {
 	Vec2f result = {
 		.x = v1.x * f,
 		.y = v1.y * f
@@ -58,7 +58,7 @@ Vec2i vec2i_minus(Vec2i v1, Vec2i v2) {
 	return result;
 }
 
-Vec2i vec2i_mutiply(Vec2i v1, float f) {
+Vec2i vec2i_multiply(Vec2i v1, float f) {
 	Vec2i result = {
 		.x = v1.x * f,
 		.y = v1.y * f
@@ -173,6 +173,14 @@ Vec3i vec3i_cross(Vec3i a, Vec3i b) {
 void vec3i_normalize(Vec3i *a, int l) {
 	float num = l/sqrt(a->x*a->x+a->y*a->y+a->z*a->z);
 	*a = vec3i_multiply_f(*a, num);
+}
+
+Vec3i vec3f_to_i(Vec3f v) {
+    return vec3i_make(v.x, v.y, v.z);
+}
+
+Vec3f vec3i_to_f(Vec3i v) {
+    return vec3f_make(v.x, v.y, v.z);
 }
 
 
