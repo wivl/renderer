@@ -176,11 +176,11 @@ void vec3i_normalize(Vec3i *a, int l) {
 }
 
 Vec3i vec3f_to_i(Vec3f v) {
-    return vec3i_make(v.x, v.y, v.z);
+    return vec3i_make((int)(v.x+0.5), (int)(v.y+0.5), (int)(v.z+0.5));
 }
 
 Vec3f vec3i_to_f(Vec3i v) {
-    return vec3f_make(v.x, v.y, v.z);
+    return vec3f_make((float)v.x, (float)v.y, (float)v.z);
 }
 
 
