@@ -10,6 +10,9 @@ tinytga.h
 tinyobj.h
 tinyobj.c
 
+#cache
+/.cache
+
 # Prerequisites
 *.d
 
