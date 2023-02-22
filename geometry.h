@@ -46,6 +46,10 @@ float vec3f_multiply_v(Vec3f v1, Vec3f v2);
 
 Vec3f vec3f_cross(Vec3f a, Vec3f b);
 
+// http://www.fundza.com/vectors/normalize/
+// a.xy / |a|
+// a.y / |a|
+// a.z / |a|
 void vec3f_normalize(Vec3f *a, float l);
 
 
@@ -74,5 +78,51 @@ void vec3i_normalize(Vec3i *a, int l);
 Vec3i vec3f_to_i(Vec3f v);
 
 Vec3f vec3i_to_f(Vec3i v);
+
+typedef struct {
+	float x;
+	float y;
+	float z;
+    float w;
+} Vec4f;
+
+Vec4f vec4f_make(float x, float y, float z, float w);
+
+Vec4f vec4f_add(Vec4f v1, Vec4f v2);
+
+Vec4f vec4f_minus(Vec4f v1, Vec4f v2);
+
+Vec4f vec4f_multiply_f(Vec4f v1, float f);
+
+float vec4f_multiply_v(Vec4f v1, Vec4f v2);
+
+Vec4f vec4f_cross(Vec3f a, Vec4f b);
+
+typedef struct {
+	int x;
+	int y;
+	int z;
+    int w;
+} Vec4i;
+
+
+Vec4i vec4i_make(float x, float y, float z, float w);
+
+Vec4i vec4i_add(Vec4i v1, Vec4i v2);
+
+Vec4i vec4i_minus(Vec4i v1, Vec4i v2);
+
+Vec4i vec4i_multiply_f(Vec4i v1, float f);
+
+float vec4i_multiply_v(Vec4i v1, Vec4i v2);
+
+Vec4i vec4i_cross(Vec4i a, Vec4i b);
+
+
+Vec4i vec4f_to_i(Vec4f v);
+
+Vec4f vec4i_to_f(Vec4i v);
+
+
 
 #endif

@@ -183,5 +183,105 @@ Vec3f vec3i_to_f(Vec3i v) {
     return vec3f_make((float)v.x, (float)v.y, (float)v.z);
 }
 
+Vec4f vec4f_make(float x, float y, float z, float w) {
+    Vec4f v = {
+        .x = x,
+        .y = y,
+        .z = z,
+        .w = w,
+    };
+    return v;
+}
+
+Vec4f vec4f_add(Vec4f v1, Vec4f v2) {
+    return vec4f_make(
+            v1.x + v2.x,
+            v1.y + v2.y,
+            v1.z + v2.z,
+            v1.w + v2.w
+            );
+}
+
+Vec4f vec4f_minus(Vec4f v1, Vec4f v2) {
+    return vec4f_make(
+            v1.x - v2.x,
+            v1.y - v2.y,
+            v1.z - v2.z,
+            v1.w - v2.w
+            );
+}
+
+Vec4f vec4f_multiply_f(Vec4f v1, float f) {
+    return vec4f_make(
+            v1.x * f,
+            v1.y * f,
+            v1.z * f,
+            v1.w * f
+            );
+}
+
+float vec4f_multiply_v(Vec4f v1, Vec4f v2) {
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
+}
+
+Vec4f vec4f_cross(Vec3f a, Vec4f b);
+
+Vec4i vec4i_make(float x, float y, float z, float w) {
+    Vec4i v = {
+        .x = x,
+        .y = y,
+        .z = z,
+        .w = w,
+    };
+    return v;
+
+}
+
+Vec4i vec4i_add(Vec4i v1, Vec4i v2) {
+    return vec4i_make(
+            v1.x + v2.x,
+            v1.y + v2.y,
+            v1.z + v2.z,
+            v1.w + v2.w
+            );
+
+}
+
+Vec4i vec4i_minus(Vec4i v1, Vec4i v2) {
+    return vec4i_make(
+            v1.x - v2.x,
+            v1.y - v2.y,
+            v1.z - v2.z,
+            v1.w - v2.w
+            );
+
+}
+
+Vec4i vec4i_multiply_f(Vec4i v1, float f) {
+    return vec4i_make(
+            v1.x * f,
+            v1.y * f,
+            v1.z * f,
+            v1.w * f
+            );
+
+}
+
+float vec4i_multiply_v(Vec4i v1, Vec4i v2) {
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
+}
+
+Vec4i vec4i_cross(Vec4i a, Vec4i b);
+
+
+Vec4i vec4f_to_i(Vec4f v) {
+    return vec4i_make((int)(v.x+0.5), (int)(v.y+0.5), (int)(v.z+0.5), (int)(v.w+0.5));
+}
+
+Vec4f vec4i_to_f(Vec4i v) {
+    return vec4f_make((float)v.x, (float)v.y, (float)v.z, (float)v.w);
+}
+
+
 
 
