@@ -46,8 +46,33 @@ Matrix m_multiply(Matrix a, Matrix b) {
     return result;
 }
 
+Vec4f m_multiply_vec4f(Matrix m, Vec4f v) {
+    assert(m.rows == 4);
+    Vec4f ans;
+    for (int i = 0; i < 4; i++) {
+        float temp = 0;
+        for (int j = 0; j < 4; j++) {
+            temp += m_get(&m, i, j)*vec4f_get(&v, j);
+        }
+        vec4f_set(&ans, i, temp);
+    }
+    return ans;
+}
+
+Vec4i m_multiply_vec4i(Matrix m, Vec4i v) {
+    assert(m.rows == 4);
+    Vec4i ans;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            vec4i_set(&ans, i, m_get(&m, i, j)*vec4i_get(&v, j));
+        }
+    }
+    return ans;
+}
+
+
 Matrix m_transpose(Matrix *m) {
-    Matrix result = m_make(m->cols, m->rows);
+    Matrix result = m_make(m->rows, m->cols);
     for (int i = 0; i < m->rows; i++) {
         for (int j = 0; j < m->cols; j++) {
             result.data[i*result.cols+j] = m->data[j*m->cols+i];
@@ -113,6 +138,7 @@ Matrix m_vec3f_to_matrix(Vec3f v) {
     m.data[3*m.cols+0] = 1.f;
     return m;
 }
+
 
 float m_get(Matrix *m, int row, int col) {
     return m->data[row*m->cols+col];

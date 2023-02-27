@@ -1,96 +1,70 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include "SDL.h"
 #include "tinytga.h"
 #include "tinyobj.h"
 #include "matrix.h"
 #include "geometry.h"
-#include "render.h"
+#include "shader.h"
 
-// SDL check code
-void scc(int code) {
-	if (code < 0) {
-		fprintf(stderr, "SDL ERROR: %s\n", SDL_GetError());
-		exit(1);
-	}
-}
-
-// SDL check pointer
-void *scp(void *ptr) {
-	if (ptr == NULL) {
-		fprintf(stderr, "SDL ERROR: %s\n", SDL_GetError());
-		exit(1);
-	}
-	return ptr;
-}
-
-bool quit = false;
-
-#define WINDOW_HEIGHT 600
-#define WINDOW_WIDTH 800
-
-// 事件处理
-void EventHandler(SDL_Event *event) {
-    while (SDL_PollEvent(event)) {
-			switch (event->type) {
-			case SDL_QUIT:
-				quit = true;
-				break;
-		}
-	}
-}
-
-// 显示一帧
-void Present(SDL_Renderer *renderer) {
-	SDL_RenderPresent(renderer);
-}
-
-// 每帧渲染前清屏
-void ClearScreen(SDL_Renderer *renderer) {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_RenderClear(renderer);
-}
-
-// 更新数据
-void LogicUpdate() {
-
-}
-
-// 渲染
-void Render(SDL_Renderer *renderer) {
-	ClearScreen(renderer);
-    // 使用 RGBA
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 0);
-    
-
-
-	Present(renderer);
-}
-
-
+#define WIDTH 800
+#define HEIGHT 800
 
 int main(void) {
-	scc(SDL_Init(SDL_INIT_VIDEO));
+    tobj_load_model("african_head.obj", NO_TEXTURE);
 
-	SDL_Window *window = scp(SDL_CreateWindow("renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN));
-	SDL_Renderer *renderer = scp(SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE)); // SDL_WINDOW_ACCELERATED will cause splash 
+    Vec3f light_dir = vec3f_make(1, 1, 1);
+    Vec3f eye = vec3f_make(0, 4, 4);
+    Vec3f center = vec3f_make(0, 0, 0);
+    Vec3f up = vec3f_make(0, 1, 0);
 
-	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);	// 允许透明
+    Shader shader = {
+        .light_dir = light_dir,
+        .eye = eye,
+        .center = center,
+        .up = up
+    };
+    
+    S_set_modelview(&shader, eye, center, up);
+    S_set_viewport(&shader, WIDTH/8, HEIGHT/8, WIDTH*3/4, HEIGHT*3/4);
+    S_set_projection(&shader, -1.f/vec3f_norm(vec3f_minus(eye, center)));
+    S_get_final_matrix(&shader);
+    vec3f_normalize(&light_dir, 1);
+    
+    shader.light_dir = light_dir;
 
-	SDL_Event event = {0};
-	while (!quit) {	// 一次循环绘制一帧
-		EventHandler(&event);
-		LogicUpdate();
-		Render(renderer);
-        
+#define pink 0xFFFFB6C1
 
-		
-		Present(renderer);
-	}
+    tt_image *image = tt_create(WIDTH, HEIGHT, tt_make_color(0x00000000));
+    // tt_image *zbuffer = tt_create(WIDTH, HEIGHT, tt_make_color(0x00000000));
 
-	scc(SDL_RenderClear(renderer));
-	SDL_DestroyRenderer(renderer);
-	SDL_Quit();
-	return 0;
+    int *zbuffer = (int*)malloc(sizeof(int)*WIDTH*HEIGHT);
+
+    tobj_model *model = tobj_load_model("african_head.obj", TEXTURE_TGA);
+    tobj_load_texture(model, "african_head_diffuse.tga");
+
+    printf("[DEBUG]fcapp: %lu\n", model->f_capp);
+    for (int i = 0; i < model->f_capp; i++) {   // for every faces
+        Vec4f screen_coords[3];
+        for (int j = 0; j < 3; j++) {           // for every vertexes
+            screen_coords[j] = S_vertex_shader(&shader, model, i, j);
+        }
+        // printf("[DEBUG]Ver shader set varying_intensity to (%f, %f, %f)\n",
+        //    shader.varying_intensity.x, 
+        //    shader.varying_intensity.y,
+        //    shader.varying_intensity.z);
+        //printf("[DEBUG]After v shader: (%f, %f) (%f, %f) (%f, %f)\n", 
+        //        screen_coords[0].x, screen_coords[0].y,
+        //        screen_coords[1].x, screen_coords[1].y,
+        //        screen_coords[2].x, screen_coords[2].y
+        //        );
+        S_draw_triangle(&shader, image, model, screen_coords, zbuffer);
+    }
+
+    tt_flip_vertically(image);
+    // tt_flip_vertically(zbuffer);
+
+    tt_save(image, "image.tga");
+    // tt_save(zbuffer, "zbuffer.tga");
+    
 }

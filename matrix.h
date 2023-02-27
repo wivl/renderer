@@ -1,5 +1,5 @@
-#ifndef _MATRIX_H_
-#define _MATRIX_H_
+#ifndef MATRIX_H_
+#define MATRIX_H_
 
 #include "geometry.h"
 
@@ -17,6 +17,10 @@ Matrix m_make_from_data(int rows, int cols, float *data);
 Matrix m_identity(int dimensions);
 
 Matrix m_multiply(Matrix a, Matrix b);
+
+Vec4f m_multiply_vec4f(Matrix m, Vec4f v);
+
+Vec4i m_multiply_vec4i(Matrix m, Vec4i v);
 
 Matrix m_transpose(Matrix *m);
 

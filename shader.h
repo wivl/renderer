@@ -6,31 +6,47 @@
 #include "tinytga.h"
 #include "tinyobj.h"
 
+typedef struct {
+    Vec3f light_dir;
+    Vec3f eye;
+    Vec3f center;
+    Vec3f up;
+
+    Vec3f varying_intensity; // intensity of 3 vertexes
+    Matrix modelview;   // model to world
+    Matrix viewport;    // world to camera
+    Matrix projection;  // projection
+    Matrix final_matrix;// combination
+} Shader;
+
 /* 
  * vertex shader: 告诉显卡点应该被画在什么位置，对每一个顶点
  * （这些顶点可能有很多属性（纹理，法线等等），也可能只有最基
  * 本的位置属性），假设有三个顶点，那么就应该被调用3次。
  *
- * fragment shader: 
+ * fragment shader: 对每一个需要渲染的像素运行fragment shader，
+ * 设置像素的颜色，并最终渲染在屏幕上，每个pixel都需要调用一次
  *
  * */
+Shader S_make();
 
 // world to camera
-Matrix S_viewport(int x, int y, int w, int h, int depth);
+void S_set_viewport(Shader *shader, int x, int y, int w, int h);
 
 // projection
-Matrix S_projection(float coeff);
+void S_set_projection(Shader *shader, float coeff);
 
 // model to world
-Matrix S_modelview(Vec3f eye, Vec3f center, Vec3f up);
+void S_set_modelview(Shader *shader, Vec3f eye, Vec3f center, Vec3f up);
 
-Matrix S_get_final_matrix(Matrix *v, Matrix *p, Matrix *m);
+void S_get_final_matrix(Shader *shader);
 
-Vec4f S_vertex_shader(Vec4f v, Matrix m);
+Vec4f S_vertex_shader(Shader *shader, tobj_model *model, int iface, int nthvert);
 
-bool S_fragment_shader(Vec3f bar, tt_color *color);
+bool S_fragment_shader(Shader *shader, Vec3f bar, tt_color *color);
 
-void S_draw_triangle(tt_image *image, tobj_model *model, Vec3i *pts, Vec2i *uvs, int *zbuffer);
+void S_draw_triangle(Shader *shader, tt_image *image, tobj_model *model,
+        Vec4f *pts, int *zbuffer);
 
 
 
