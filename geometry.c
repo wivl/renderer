@@ -312,6 +312,16 @@ Vec3f vec3i_to_f(Vec3i v) {
     return vec3f_make((float)v.x, (float)v.y, (float)v.z);
 }
 
+// FIX: not sure if it has round issue
+Vec2i vec2f_to_i(Vec2f v) {
+    return vec2i_make((int)v.x, (int)v.y);
+}
+
+Vec2f vec2i_to_f(Vec2i v) {
+    return vec2f_make((float)v.x, (float)v.y);
+}
+
+
 Vec4f vec4f_make(float x, float y, float z, float w) {
     Vec4f v = {
         .x = x,
@@ -497,4 +507,10 @@ Vec4f vec3f_to_4f(Vec3f v, const float fill) {
     return result;
 }
 
+
+Vec3f vec4f_to_3f(Vec4f v) {
+    Vec3f result;
+    for (int i = 3; i--; vec3f_set(&result, i, vec4f_get(&v, i)));
+    return result;
+}
 

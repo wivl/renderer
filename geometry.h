@@ -98,6 +98,10 @@ Vec3i vec3f_to_i(Vec3f v);
 
 Vec3f vec3i_to_f(Vec3i v);
 
+Vec2i vec2f_to_i(Vec2f v);
+
+Vec2f vec2i_to_f(Vec2i v);
+
 typedef struct {
 	float x;
 	float y;
@@ -152,5 +156,7 @@ Vec4f vec4i_to_f(Vec4i v);
 // trans
 // vec3f to vec4f
 Vec4f vec3f_to_4f(Vec3f v, const float fill);
+
+Vec3f vec4f_to_3f(Vec4f v);
 
 #endif

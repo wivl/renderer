@@ -70,9 +70,21 @@ Vec4i m_multiply_vec4i(Matrix m, Vec4i v) {
     return ans;
 }
 
+Vec2f m_multiply_vec3f(Matrix m, Vec3f v) {
+    assert(m.rows == 2);
+    Vec2f ans;
+    for (int i = 0; i < 2; i++) {
+        float temp = 0;
+        for (int j = 0; j < 3; j++) {
+            temp += m_get(&m, i, j)*vec3f_get(&v, j);
+        }
+        vec2f_set(&ans, i, temp);
+    }
+    return ans;
+}
 
 Matrix m_transpose(Matrix *m) {
-    Matrix result = m_make(m->rows, m->cols);
+    Matrix result = m_make(m->cols, m->rows);
     for (int i = 0; i < m->rows; i++) {
         for (int j = 0; j < m->cols; j++) {
             result.data[i*result.cols+j] = m->data[j*m->cols+i];
@@ -121,6 +133,11 @@ Matrix m_inverse(Matrix *m) {   // A^(-1)
             truncate.data[i*truncate.cols+j] = result.data[i*result.cols+j+m->cols];
     return truncate;
 }
+Matrix m_invert_transpose(Matrix m) {
+    Matrix tmp = m_inverse(&m);
+    return m_transpose(&tmp);
+}
+
 
 Vec3f m_matrix_to_vec3f(Matrix m) {
     return vec3f_make(
@@ -152,4 +169,8 @@ void m_set(Matrix *m, int row, int col, float value) {
 }
 
 
+void m_set_col(Matrix *m, int idx, Vec2f v) {
+    assert(m->cols > idx);
+    for (size_t i=m->rows; i--; m_set(m, i, idx, vec2f_get(&v, i)));
+}
 
