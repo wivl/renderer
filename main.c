@@ -39,14 +39,15 @@ int main(void) {
     tobj_model *model = tobj_load_model("african_head.obj", TEXTURE_TGA);
     tobj_load_diffusemap(model, "african_head_diffuse.tga");
     tobj_load_normalmap(model, "african_head_nm.tga");
+    tobj_load_specularmap(model, "african_head_spec.tga");
 
     for (int i = 0; i < model->f_capp; i++) {   // for every faces
         Vec4f screen_coords[3];
         for (int j = 0; j < 3; j++) {           // for every vertexes
-            screen_coords[j] = S_vertex_shader_normalmapping(shader, model, i, j);
+            screen_coords[j] = S_vertex_shader_specular(shader, model, i, j);
         }
         
-        S_draw_triangle_normalmapping(shader, image, model, screen_coords, zbuffer);
+        S_draw_triangle_specular(shader, image, model, screen_coords, zbuffer);
     }
 
     tt_flip_vertically(image);

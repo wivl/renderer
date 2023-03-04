@@ -73,6 +73,12 @@ void S_draw_triangle_normalmapping(Shader *shader, tt_image *image, tobj_model *
 
 
 // TODO: specular mapping shaders
+Vec4f S_vertex_shader_specular(Shader *shader, tobj_model *model, int iface, int nthvert);
+
+bool S_fragment_shader_specular(Shader *shader, tobj_model *model, Vec3f bar, tt_color *color);
+
+void S_draw_triangle_specular(Shader *shader, tt_image *image, tobj_model *model,
+        Vec4f *pts, int *zbuffer);
 
 
 

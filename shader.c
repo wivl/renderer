@@ -125,6 +125,15 @@ Vec4f S_vertex_shader(Shader *shader, tobj_model *model, int iface, int nthvert)
     return vertex;
 }
 
+bool S_fragment_shader(Shader *shader, Vec3f bar, tt_color *color) {
+    float intensity = vec3f_multiply_v(shader->varying_intensity, bar);
+    color->r = 0xFF * intensity;
+    color->g = 0xFF * intensity;
+    color->b = 0xFF * intensity;
+    color->a = 0xFF;
+    return false;
+}
+
 Vec4f S_vertex_shader_texture(Shader *shader, tobj_model *model, int iface, int nthvert) {
     // get uv from model
     m_set_col(&(shader->varying_uv), nthvert, tobj_get_uv(model, iface, nthvert));
@@ -142,6 +151,15 @@ Vec4f S_vertex_shader_texture(Shader *shader, tobj_model *model, int iface, int 
     return vertex;
 }
 
+bool S_fragment_shader_texture(Shader *shader, tobj_model *model, Vec3f bar, tt_color *color) {
+
+    float intensity = vec3f_multiply_v(shader->varying_intensity, bar);
+    Vec2f uv = m_multiply_vec3f(shader->varying_uv, bar);
+    *color = tobj_diffuse(model, uv);
+    tt_color_intensity(color, intensity);
+    return false;
+}
+
 Vec4f S_vertex_shader_normalmapping(Shader *shader, tobj_model *model, int iface, int nthvert) {
     m_set_col(&(shader->varying_uv), nthvert, tobj_get_uv(model, iface, nthvert));
 
@@ -155,30 +173,8 @@ Vec4f S_vertex_shader_normalmapping(Shader *shader, tobj_model *model, int iface
 
 }
 
-
-
-
-bool S_fragment_shader(Shader *shader, Vec3f bar, tt_color *color) {
-    float intensity = vec3f_multiply_v(shader->varying_intensity, bar);
-    color->r = 0xFF * intensity;
-    color->g = 0xFF * intensity;
-    color->b = 0xFF * intensity;
-    color->a = 0xFF;
-    return false;
-}
-
-bool S_fragment_shader_texture(Shader *shader, tobj_model *model, Vec3f bar, tt_color *color) {
-    
-    float intensity = vec3f_multiply_v(shader->varying_intensity, bar);
-    Vec2f uv = m_multiply_vec3f(shader->varying_uv, bar);
-    *color = tobj_diffuse(model, uv);
-    tt_color_intensity(color, intensity);
-    return false;
-}
-
 bool S_fragment_shader_normalmapping(Shader *shader, tobj_model *model, Vec3f bar, tt_color *color) {
     Vec2f uv = m_multiply_vec3f(shader->varying_uv, bar);
-    printf("[DEBUG]In fragment, uv: (%f, %f)\n", uv.x, uv.y);
     Vec3f n = vec4f_to_3f(m_multiply_vec4f(shader->uniform_MIT, 
                 vec3f_to_4f(tobj_get_normal_from_map(model, uv), 1)));
     vec3f_normalize(&n, 1);
@@ -190,6 +186,42 @@ bool S_fragment_shader_normalmapping(Shader *shader, tobj_model *model, Vec3f ba
     tt_color_intensity(color, intensity);
     return false;
 }
+
+Vec4f S_vertex_shader_specular(Shader *shader, tobj_model *model, int iface, int nthvert) {
+    m_set_col(&(shader->varying_uv), nthvert, tobj_get_uv(model, iface, nthvert));
+
+    // get nth vert of face i, and extend to 4 dimension
+    Vec4f vertex = vec3f_to_4f(tobj_get_vert_from_face(model, iface, nthvert), 1);
+
+    // calculate the transformed vertex
+    vertex = m_multiply_vec4f(shader->final_matrix, vertex);
+
+    return vertex;
+}
+
+bool S_fragment_shader_specular(Shader *shader, tobj_model *model, Vec3f bar, tt_color *color) {
+    Vec2f uv = m_multiply_vec3f(shader->varying_uv, bar);
+    Vec3f n = vec4f_to_3f(m_multiply_vec4f(shader->uniform_MIT, 
+                vec3f_to_4f(tobj_get_normal_from_map(model, uv), 1)));
+    vec3f_normalize(&n, 1);
+    Vec3f l = vec4f_to_3f(m_multiply_vec4f(shader->uniform_M, vec3f_to_4f(shader->light_dir, 1)));
+    vec3f_normalize(&l, 1);
+    // Add
+    // Vec3f r = (n*(n*l*2.f) - l).normalize();   // reflected light
+    Vec3f r = vec3f_minus(vec3f_multiply_f(n, vec3f_multiply_v(n, l)*2.f), l);   // reflected light
+    vec3f_normalize(&r, 1);
+
+    float spec = powf(fmaxf(r.z, 0.0f), tobj_get_specular(model, uv));
+    float diff = fmaxf(0.f, vec3f_multiply_v(n, l));
+    *color = tobj_diffuse(model, uv);
+    // for (int i=0; i<3; i++) color[i] = std::min<float>(5 + c[i]*(diff + .6*spec), 255);
+    color->b = fminf(5+color->b*(diff+0.6*spec), 255);
+    color->g = fminf(5+color->g*(diff+0.6*spec), 255);
+    color->r = fminf(5+color->r*(diff+0.6*spec), 255);
+    //*color = tt_make_color(0xFFFFFFFF);
+    return false;
+}
+
 
 /*
  * pts: points [A, B, C]
@@ -356,6 +388,53 @@ void S_draw_triangle_normalmapping(Shader *shader, tt_image *image, tobj_model *
         }
     }
 }
+
+void S_draw_triangle_specular(Shader *shader, tt_image *image, tobj_model *model,
+        Vec4f *pts, int *zbuffer) {
+    Vec2f bboxmin = { .x = FLT_MAX, .y = FLT_MAX };
+    Vec2f bboxmax = { .x = -FLT_MAX, .y = -FLT_MAX };
+
+    // calculate bounding boxes
+    for (int i = 0; i < 3; i++) {
+        bboxmin.x = fminf(bboxmin.x, pts[i].x/pts[i].w);
+        bboxmin.y = fminf(bboxmin.y, pts[i].y/pts[i].w);
+
+        bboxmax.x = fmaxf(bboxmax.x, pts[i].x/pts[i].w);
+        bboxmax.y = fmaxf(bboxmax.y, pts[i].y/pts[i].w);
+    }
+    Vec2i P;
+    tt_color color;
+
+    for (P.x = bboxmin.x; P.x <= bboxmax.x; P.x++) {
+        for (P.y = bboxmin.y; P.y <= bboxmax.y; P.y++) { // for every pixels
+            Vec3f c = barycentric(
+                    vec2f_make(pts[0].x/pts[0].w, pts[0].y/pts[0].w),
+                    vec2f_make(pts[1].x/pts[1].w, pts[1].y/pts[1].w),
+                    vec2f_make(pts[2].x/pts[2].w, pts[2].y/pts[2].w),
+                    vec2f_make(P.x, P.y)
+                    );
+            float z = pts[0].z*c.x + pts[1].z*c.y + pts[2].z*c.z;
+            float w = pts[0].w*c.x + pts[1].w*c.y + pts[2].w*c.z;
+            int frag_depth = fmaxf(0, fminf(255, (float)(int)(z/w+.5)));
+            tt_color buffer_color = { 
+                .b = (uint8_t)fmaxf(0, fminf(255, (float)(int)(z/w+.5))),
+                .g = 0,
+                .r = 0,
+                .a = 0xFF
+            };
+            if (c.x<0 || c.y<0 || c.z<0 || zbuffer[P.y*image->width+P.x] > frag_depth) 
+                continue;
+            bool discard = S_fragment_shader_specular(shader, model, c, &color);
+            if (!discard) {
+                assert(color.a == 0xFF);
+                zbuffer[P.y*image->width+P.x] = frag_depth;
+                tt_set_color(image, P.x, P.y, color);
+            }
+        }
+    }
+
+}
+
 
 
 
