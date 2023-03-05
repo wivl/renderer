@@ -70,7 +70,7 @@ Vec4i m_multiply_vec4i(Matrix m, Vec4i v) {
     return ans;
 }
 
-Vec2f m_multiply_vec3f(Matrix m, Vec3f v) {
+Vec2f m_multiply_vec3f_2(Matrix m, Vec3f v) {
     assert(m.rows == 2);
     Vec2f ans;
     for (int i = 0; i < 2; i++) {
@@ -79,6 +79,19 @@ Vec2f m_multiply_vec3f(Matrix m, Vec3f v) {
             temp += m_get(&m, i, j)*vec3f_get(&v, j);
         }
         vec2f_set(&ans, i, temp);
+    }
+    return ans;
+}
+
+Vec3f m_multiply_vec3f_3(Matrix m, Vec3f v) {
+    assert(m.rows == 3);
+    Vec3f ans;
+    for (int i = 0; i < 3; i++) {
+        float temp = 0;
+        for (int j = 0; j < 3; j++) {
+            temp += m_get(&m, i, j)*vec3f_get(&v, j);
+        }
+        vec3f_set(&ans, i, temp);
     }
     return ans;
 }
@@ -169,8 +182,14 @@ void m_set(Matrix *m, int row, int col, float value) {
 }
 
 
-void m_set_col(Matrix *m, int idx, Vec2f v) {
+void m_set_col2(Matrix *m, int idx, Vec2f v) {
     assert(m->cols > idx);
     for (size_t i=m->rows; i--; m_set(m, i, idx, vec2f_get(&v, i)));
 }
+
+void m_set_col3(Matrix *m, int idx, Vec3f v) {
+    assert(m->cols > idx);
+    for (size_t i=m->rows; i--; m_set(m, i, idx, vec3f_get(&v, i)));
+}
+
 

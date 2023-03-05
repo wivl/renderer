@@ -22,7 +22,9 @@ Vec4f m_multiply_vec4f(Matrix m, Vec4f v);
 
 Vec4i m_multiply_vec4i(Matrix m, Vec4i v);
 
-Vec2f m_multiply_vec3f(Matrix m, Vec3f v);
+Vec2f m_multiply_vec3f_2(Matrix m, Vec3f v);
+
+Vec3f m_multiply_vec3f_3(Matrix m, Vec3f v);
 
 Matrix m_transpose(Matrix *m);
 
@@ -48,6 +50,7 @@ float m_get(Matrix *m, int row, int col);
 
 void m_set(Matrix *m, int row, int col, float value);
 
-void m_set_col(Matrix *m, int idx, Vec2f v);
+void m_set_col2(Matrix *m, int idx, Vec2f v);
+void m_set_col3(Matrix *m, int idx, Vec3f v);
 
 #endif
