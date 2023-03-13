@@ -6,7 +6,7 @@ Me learning computer graphics by cloning [ssloy/tinyrenderer](https://github.com
 
 Phong shading
 
-|![Phong shading demo](./assets/phong_shading_african_head.png)|![Phong shading demo](./assets/phong_shading_diablopng)|
+|![Phong shading demo](./assets/phong_shading_african_head.png)|![Phong shading demo](./assets/phong_shading_diablo.png)|
 |------------|-------|
 |african_head|diablo3|
 
