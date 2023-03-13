@@ -192,4 +192,9 @@ void m_set_col3(Matrix *m, int idx, Vec3f v) {
     for (size_t i=m->rows; i--; m_set(m, i, idx, vec3f_get(&v, i)));
 }
 
+void m_set_col4(Matrix *m, int idx, Vec4f v) {
+    assert(m->cols > idx);
+    for (size_t i=m->rows; i--; m_set(m, i, idx, vec4f_get(&v, i)));
+
+}
 

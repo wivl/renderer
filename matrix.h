@@ -52,5 +52,6 @@ void m_set(Matrix *m, int row, int col, float value);
 
 void m_set_col2(Matrix *m, int idx, Vec2f v);
 void m_set_col3(Matrix *m, int idx, Vec3f v);
+void m_set_col4(Matrix *m, int idx, Vec4f v);
 
 #endif
