@@ -20,4 +20,5 @@ Shadow
 
 ## TODOS
 
+* Rewrite codebase in C++
 * Add ambient occlusion
