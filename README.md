@@ -2,6 +2,16 @@
 
 Me learning computer graphics by cloning [ssloy/tinyrenderer](https://github.com/ssloy/tinyrenderer)
 
+## TODOS
+
+|items|status|
+|-----|------|
+|Rewrite codebase in C++|W|
+|try conan packge manager|W|
+|switch tinytga to stb|W|
+|~~Add ambient occlusion~~|N|
+
+
 ## Demo
 
 Phong shading
@@ -18,7 +28,4 @@ Shadow
 |african_head|diablo3|
 
 
-## TODOS
 
-* Rewrite codebase in C++
-* Add ambient occlusion
