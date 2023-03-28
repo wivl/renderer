@@ -11,25 +11,28 @@
 class Camera {
 private:
     Eigen::Vector3f position;
-    Shader *shader;
-    std::vector<Object> obj_list;
+    Shader shader;
 
     // matrixes
     Eigen::Matrix4f view;
     Eigen::Matrix4f projection;
 
+    // TODO: define set model view projection
+    // ModelView combines model and view matrixes
+    void _get_modelview(); // used in the Camera::render() function
+
 public:
     Camera();
     Camera(Eigen::Vector3f position, Shader &shader);
-    Camera(Eigen::Vector3f position, Shader &shader, std::vector<Object> obj_list);
 
     void set_position(Eigen::Vector3f position);
     Eigen::Vector3f get_position();
 
-    void set_shader(Shader *shader);
+    void set_shader(Shader &shader);
 
-    void add_obj(Object obj);
-    void del_obj(int index);
+    // camera represent's the world. objects are stored in the list
+    void render(std::vector<Object> obj_list, std::vector<Eigen::Vector3f> lights);
+
 
 
 };
