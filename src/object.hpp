@@ -16,6 +16,7 @@ private:
     std::vector<Eigen::Vector3f> vertices;
     std::vector<Eigen::Vector3i> faces;
     Eigen::Vector3f position;
+    // TODO: rotate: up vector
 public:
     Object();
     Object(const char *filename, int filetype);
