@@ -19,18 +19,28 @@ private:
     Eigen::Vector3f target;
     Eigen::Vector3f up;
 
+    float fovy;
+    float aspect;
+    float near;
+    float far;
+
+    int width;
+    int height;
+
     Shader shader;
 
     // matrixes
+    // model matrix is in Object class
     Eigen::Matrix4f view;
     Eigen::Matrix4f projection;
+    Eigen::Matrix4f viewport;
 
     // TODO: define set model view projection
     // ModelView combines model and view matrixes
 
 public:
     Camera();
-    Camera(Eigen::Vector3f position, Eigen::Vector3f target, Eigen::Vector3f up);
+    Camera(Eigen::Vector3f position, Eigen::Vector3f target, Eigen::Vector3f up, int width, int height, float fovy, float aspect, float near, float far);
 
     void set_position(Eigen::Vector3f position);
     void set_target(Eigen::Vector3f target);

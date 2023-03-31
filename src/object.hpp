@@ -23,7 +23,7 @@ public:
     int nface();
     int nvert();
     Eigen::Vector3f get_vert(int index);
-    Eigen::Vector3f get_face(int index);
+    Eigen::Vector3i get_face(int index);
     Eigen::Vector3f get_position();
     void set_position(Eigen::Vector3f position);
     Eigen::Matrix4f get_model();

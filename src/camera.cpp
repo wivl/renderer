@@ -1,6 +1,7 @@
 #include "camera.hpp"
 #include <Eigen/src/Core/Matrix.h>
 
+#include <cmath>
 
 Camera::Camera() {
     position << 0.0f, 0.0f, 0.0f;
@@ -8,13 +9,25 @@ Camera::Camera() {
     up << 0.0f, 1.0f, 0.0f;
 }
 
-Camera::Camera(Eigen::Vector3f position, Eigen::Vector3f target, Eigen::Vector3f up) {
+#define cot(x) (1.0/std::tan(x))
+
+
+// FIX: implement shader first
+Camera::Camera(Eigen::Vector3f position, Eigen::Vector3f target, Eigen::Vector3f up, int width, int height, float fovy, float aspect, float near, float far) {
     this->position = position;
     this->target = target;
     this->up = up;
+
+    this->fovy = fovy;
+    this->aspect = aspect;
+    this->near = near;
+    this->far = far;
+
+    this->width = width;
+    this->height = height;
     // calculate view and projection
 
-    // VIEW
+    // VIEW MATRIX
     Eigen::Vector3f zaxis = position - target; zaxis.normalize();
     Eigen::Vector3f xaxis = up.cross(zaxis); xaxis.normalize();
     Eigen::Vector3f yaxis = zaxis.cross(xaxis); yaxis.normalize();
@@ -34,9 +47,29 @@ Camera::Camera(Eigen::Vector3f position, Eigen::Vector3f target, Eigen::Vector3f
     }
 
     this->view = Mrotate * Mtranslate;
+    // END VIEW MATRIX
 
 
-    // TODO: PROJECTION
+    // PROJECTION
+    // fov,aspect,far,near
+    this->projection << cot(fovy/2)/aspect, 0,              0,                      0,
+                        0,                  cot(fovy/2),    0,                      0,
+                        0,                  0,              (near+far)/(near-far),  -(2*near*far)/(near-far),
+                        0,                  0,              1,                      0;
+    // END PROJECTION MATRIX
+
+
+
+    // VIEWPORT
+    this->viewport <<   (float)width/2,     0,                  0, (float)width/2,
+                        0,                  (float)height/2,    0, (float)height/2,
+                        0,                  0,                  1, 0,
+                        0,                  0,                  0, 1;
+    // END VIEWPORT MATRIX
+
+    // TODO: set shader
+
+
     
 }
 

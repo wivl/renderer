@@ -7,7 +7,7 @@
 #include <vector>
 
 // Actually a "shader program" or "shader pipeline" since it's about software renderer
-// camera class contains a camera pointer
+// camera class contains a shader
 // include vertex shader and fragment shader
 class Shader {
     // we have model view projection
@@ -19,6 +19,7 @@ private:
 
 public:
     Shader();
+    // Shader();
     void set_uniform(Eigen::Matrix4f uniform_m);
     Eigen::Matrix4f get_uniform();
     Eigen::Vector4f vert();

@@ -18,7 +18,7 @@ int Object::nface() {
     return faces.size();
 }
 
-Eigen::Vector3f Object::get_face(int index) {
+Eigen::Vector3i Object::get_face(int index) {
     return faces[index];
 }
 
