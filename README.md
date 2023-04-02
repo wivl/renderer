@@ -47,20 +47,13 @@ cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 ```
 
-## Demo
+## structure
 
-Phong shading
-
-|![Phong shading demo](./assets/phong_shading_african_head.png)|![Phong shading demo](./assets/phong_shading_diablo.png)|
-|------------|-------|
-|african_head|diablo3|
-
-
-Shadow
-
-|![Shadow](./assets/shadow_african_head.png)|![Shadow](./assets/shadow_diablo.png)|
-|------------|-------|
-|african_head|diablo3|
-
-
+| class | description | status |
+|-------|-------------|--------|
+|object|objects|D|
+|camera|cameras|D|
+|shader|shaders|D|
+|light|lights|TODO|
+|scene|contains objects, cameras, lights, shaders(in cameras)|TODO|
 
