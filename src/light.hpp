@@ -4,16 +4,18 @@
 #include <Eigen/Dense>
 #include <Eigen/src/Core/Matrix.h>
 
+using namespace Eigen;
+
 class Light {
     // TODO: only parallel lights
 private:
-    Eigen::Vector3f dir;
+    Vector3f dir;
 public:
-    Light(Eigen::Vector3f dir);
+    Light(Vector3f dir);
     Light(float dx, float dy, float dz);
 
-    Eigen::Vector3f get_dir();
-    Eigen::Vector3f set_dir(Eigen::Vector3f dir);
+    Vector3f get_dir();
+    void set_dir(Vector3f dir);
 
 };
 

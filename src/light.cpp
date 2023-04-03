@@ -5,14 +5,14 @@ Light::Light(float dx, float dy, float dz) {
     dir << dx, dy, dz;
 }
 
-Light::Light(Eigen::Vector3f dir) {
+Light::Light(Vector3f dir) {
     this->dir = dir;
 }
 
-Eigen::Vector3f Light::get_dir() {
+Vector3f Light::get_dir() {
     return dir;
 }
 
-Eigen::Vector3f Light::set_dir(Eigen::Vector3f dir) {
+void Light::set_dir(Vector3f dir) {
     this->dir = dir;
 }

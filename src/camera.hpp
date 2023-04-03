@@ -9,6 +9,8 @@
 #include "object.hpp"
 #include "light.hpp"
 
+using namespace Eigen;
+
 // TODO: s:
 // * calculate view and projection while generating Camera object
 //   and setting position, target or up vector.
