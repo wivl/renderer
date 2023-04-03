@@ -1,6 +1,6 @@
 [requires]
 eigen/3.4.0
-stb/cci.20220909
+pngpp/0.2.10
 
 [generators]
 CMakeToolchain
