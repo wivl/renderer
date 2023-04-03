@@ -7,6 +7,7 @@
 
 #include "shader.hpp"
 #include "object.hpp"
+#include "light.hpp"
 
 // TODO: s:
 // * calculate view and projection while generating Camera object
@@ -46,17 +47,24 @@ public:
     void set_target(Eigen::Vector3f target);
     void set_up(Eigen::Vector3f up);
 
-
     Eigen::Vector3f get_position();
     Eigen::Vector3f get_target();
     Eigen::Vector3f get_up();
 
-    Eigen::Matrix4f get_modelview(Eigen::Matrix4f Mmodel);
+    void set_fov(float fovy);
+    void set_far(float far);
+    void set_near(float near);
+
+    float get_fov();
+    float get_far();
+    float get_near();
+
+    Eigen::Matrix4f get_modelview(Eigen::Matrix4f model);
 
     void set_shader(Shader &shader);
 
     // objects are stored in the list
-    void render(std::vector<Object> obj_list, std::vector<Eigen::Vector3f> lights);
+    void render(std::vector<Object> obj_list, Light light);
 
 
 

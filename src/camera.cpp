@@ -3,30 +3,9 @@
 
 #include <cmath>
 
-Camera::Camera() {
-    position << 0.0f, 0.0f, 0.0f;
-    target << 0.0f, 0.0f, 0.0f;
-    up << 0.0f, 1.0f, 0.0f;
-}
-
 #define cot(x) (1.0/std::tan(x))
 
-
-// FIX: implement shader first
-Camera::Camera(Eigen::Vector3f position, Eigen::Vector3f target, Eigen::Vector3f up, int width, int height, float fovy, float aspect, float near, float far) {
-    this->position = position;
-    this->target = target;
-    this->up = up;
-
-    this->fovy = fovy;
-    this->aspect = aspect;
-    this->near = near;
-    this->far = far;
-
-    this->width = width;
-    this->height = height;
-    // calculate view and projection
-
+Eigen::Matrix4f _cal_view(Eigen::Vector3f position, Eigen::Vector3f target, Eigen::Vector3f up) {
     // VIEW MATRIX
     Eigen::Vector3f zaxis = position - target; zaxis.normalize();
     Eigen::Vector3f xaxis = up.cross(zaxis); xaxis.normalize();
@@ -45,44 +24,77 @@ Camera::Camera(Eigen::Vector3f position, Eigen::Vector3f target, Eigen::Vector3f
         Mrotate(row, 1) = yaxis(row);
         Mrotate(row, 2) = zaxis(row);
     }
+    return Mrotate * Mtranslate;
+    
+}
 
-    this->view = Mrotate * Mtranslate;
-    // END VIEW MATRIX
+Eigen::Matrix4f _cal_proj(float fovy, float aspect, float near, float far) {
+    Eigen::Matrix4f temp;
+    temp << cot(fovy/2)/aspect, 0,              0,                      0,
+            0,                  cot(fovy/2),    0,                      0,
+            0,                  0,              (near+far)/(near-far),  -(2*near*far)/(near-far),
+            0,                  0,              1,                      0;
+    return temp;
+}
 
+Eigen::Matrix4f _cal_viewport(int width, int height) {
+    Eigen::Matrix4f temp;
+    temp << (float)width/2,     0,                  0, (float)width/2,
+            0,                  (float)height/2,    0, (float)height/2,
+            0,                  0,                  1, 0,
+            0,                  0,                  0, 1;    
+    return temp;
+}
+
+Camera::Camera() {
+    position << 0.0f, 0.0f, 0.0f;
+    target << 0.0f, 0.0f, 0.0f;
+    up << 0.0f, 1.0f, 0.0f;
+}
+
+
+
+Camera::Camera(Eigen::Vector3f position, Eigen::Vector3f target, Eigen::Vector3f up, int width, int height, float fovy, float aspect, float near, float far) {
+    this->position = position;
+    this->target = target;
+    this->up = up;
+
+    this->fovy = fovy;
+    this->aspect = aspect;
+    this->near = near;
+    this->far = far;
+
+    this->width = width;
+    this->height = height;
+    // calculate view and projection
+
+    // VIEW MATRIX
+    this->view = _cal_view(position, target, up);
 
     // PROJECTION
     // fov,aspect,far,near
-    this->projection << cot(fovy/2)/aspect, 0,              0,                      0,
-                        0,                  cot(fovy/2),    0,                      0,
-                        0,                  0,              (near+far)/(near-far),  -(2*near*far)/(near-far),
-                        0,                  0,              1,                      0;
-    // END PROJECTION MATRIX
-
-
+    this->projection = _cal_proj(fovy, aspect, near, far);
 
     // VIEWPORT
-    this->viewport <<   (float)width/2,     0,                  0, (float)width/2,
-                        0,                  (float)height/2,    0, (float)height/2,
-                        0,                  0,                  1, 0,
-                        0,                  0,                  0, 1;
-    // END VIEWPORT MATRIX
+    this->viewport = _cal_viewport(width, height);
 
     // TODO: set shader
-
-
-    
+   
 }
 
 void Camera::set_position(Eigen::Vector3f position) {
     this->position = position;
+    this->view = _cal_view(position, target, up);
 }
 
 void Camera::set_target(Eigen::Vector3f target) {
     this->target = target;
+    this->view = _cal_view(position, target, up);
 }
 
 void Camera::set_up(Eigen::Vector3f up) {
     this->up = up;
+    this->view = _cal_view(position, target, up);
 }
 
 
@@ -98,15 +110,39 @@ Eigen::Vector3f Camera::get_up() {
     return up;
 }
 
+void Camera::set_fov(float fovy) {
+    this->fovy = fovy;
+    this->projection = _cal_proj(fovy, aspect, near, far);
+}
+void Camera::set_far(float far) {
+    this->far = far;
+    this->projection = _cal_proj(fovy, aspect, near, far);
+}
+void Camera::set_near(float near) {
+    this->near = near;
+    this->projection = _cal_proj(fovy, aspect, near, far);
+}
+
+float Camera::get_fov() {
+    return fovy;
+}
+float Camera::get_far() {
+    return far;
+}
+float Camera::get_near() {
+    return near;
+}
+
+
 void Camera::set_shader(Shader &shader) {
     this->shader = shader;
 }
 
 // camera represent's the world. objects are stored in the list
-void Camera::render(std::vector<Object> obj_list, std::vector<Eigen::Vector3f> lights) {
+void Camera::render(std::vector<Object> obj_list, Light light) {
     // TODO: 
 }
 
-Eigen::Matrix4f Camera::get_modelview(Eigen::Matrix4f Mmodel) {
-    return view*Mmodel;
+Eigen::Matrix4f Camera::get_modelview(Eigen::Matrix4f model) {
+    return view*model;
 }
