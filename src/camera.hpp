@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 #include <Eigen/src/Core/Matrix.h>
+#include <png++/png.hpp>
 #include <vector>
 
 #include "shader.hpp"
@@ -66,7 +67,7 @@ public:
     void set_shader(Shader &shader);
 
     // objects are stored in the list
-    void render(std::vector<Object> obj_list, Light light);
+    void render(std::vector<Object> obj_list, png::image<png::rgba_pixel> &image, std::vector<float> &zbuffer, Light light);
 
 
 

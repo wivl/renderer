@@ -1,4 +1,5 @@
 #include "shader.hpp"
+#include <png++/rgba_pixel.hpp>
 
 Shader::Shader() {}
 
@@ -29,9 +30,9 @@ Vector4f Shader::vert(Vector3f vertex, int nthvert) {
     return vert4;
 }
 
-bool Shader::fragment(Vector3f bar, Vector4f &color) {
+bool Shader::fragment(Vector3f bar, png::rgba_pixel &color) {
     // TODO: itensity
-    color << 1.0f, 1.0f, 1.0f, 1.0f;
+    color = png::rgba_pixel(255, 255, 255, 255);
     return true;
 }
 

@@ -1,8 +1,10 @@
 #include "camera.hpp"
 #include <Eigen/src/Core/Matrix.h>
-#include <png++/png.hpp>
 
 #include <cmath>
+#include <png++/rgb_pixel.hpp>
+#include <vector>
+#include <float.h>
 
 #define cot(x) (1.0/std::tan(x))
 
@@ -160,13 +162,48 @@ Vector3f barycentric(Vector2f A, Vector2f B, Vector2f C, Vector2f P) {
     return result;
 }
 
-// FIX: define stb image first
-void draw_triangle() {
+void draw_triangle(Shader &shader, png::image<png::rgba_pixel> &image, std::vector<Vector4f> pts, std::vector<float> &zbuffer) {
+    // set bounding box
+    Vector2f bboxmin, bboxmax;
+    bboxmin << std::numeric_limits<float>::max(), std::numeric_limits<float>::max();
+    bboxmax << -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max();
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 2; j++) {
+            bboxmin(j) = fminf(bboxmin(j), pts[i](j)/pts[i](3));
+            bboxmax(j) = fmaxf(bboxmax(j), pts[i](j)/pts[i](3));
+        }
+    }
+    Vector2i P;
+    png::rgba_pixel color;
 
+    for (P(0) = bboxmin(0); P(0) < bboxmax(0); P(0)++) {
+        for (P(1) = bboxmin(1); P(1) < bboxmax(1); P(1)++) {
+            Vector3f c = barycentric(
+                    Vector2f({pts[0](0)/pts[0](3), pts[0](1)/pts[0](3)}),
+                    Vector2f({pts[1](0)/pts[1](3), pts[1](1)/pts[1](3)}),
+                    Vector2f({pts[2](0)/pts[2](3), pts[2](1)/pts[2](3)}),
+                    Vector2f({P(0), P(1)})
+                    );
+            float z = pts[0](2)*c(0) + pts[1](2)*c(1) + pts[2](2)*c(2);
+            float w = pts[0](3)*c(0) + pts[1](3)*c(1) + pts[2](3)*c(2);
+
+            int frag_depth = z/w;
+
+            if (c(0)<0 || c(1)<0 || c(2)<0 || zbuffer[P(1)*image.get_width()+P(0)] > frag_depth) {
+                continue;
+            }
+            bool discard = shader.fragment(c, color);
+            if (!discard) {
+                zbuffer[P(1)*image.get_width()+P(0)] = frag_depth;
+                image.set_pixel(P(0), P(1), color);
+            }
+
+        }
+    }
 }
 
 // camera represent's the world. objects are stored in the list
-void Camera::render(std::vector<Object> obj_list, Light light) {
+void Camera::render(std::vector<Object> obj_list, png::image<png::rgba_pixel> &image, std::vector<float> &zbuffer, Light light) {
     // for every object
     //      for every face
     //          for every vertex
@@ -176,11 +213,11 @@ void Camera::render(std::vector<Object> obj_list, Light light) {
     for (auto obj = obj_list.begin(); obj != obj_list.end(); ++obj) {
         for (int i = 0; i < obj->nface(); i++) {
             Vector3i face = obj->get_face(i);
-            Vector4f screen_coords[3];
+            std::vector<Vector4f> screen_coords;
             for (int j = 0; j < 3; j++) {
                 screen_coords[j] = this->shader.vert(obj->get_vert(face(i)), j);
             }
-            // TODO: draw triangle
+            draw_triangle(shader, image, screen_coords, zbuffer);
         }
     }
 }

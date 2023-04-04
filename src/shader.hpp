@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 #include <Eigen/src/Core/Matrix.h>
+#include <png++/png.hpp>
 
 #include <vector>
 
@@ -35,7 +36,7 @@ public:
 
     // shaders
     Vector4f vert(Vector3f vertex, int nthvert);
-    bool fragment(Vector3f bar, Vector4f &color);
+    bool fragment(Vector3f bar, png::rgba_pixel &color);
 
 
 };
