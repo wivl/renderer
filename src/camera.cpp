@@ -212,10 +212,10 @@ void Camera::render(std::vector<Object> obj_list, png::image<png::rgba_pixel> &i
 
     for (auto obj = obj_list.begin(); obj != obj_list.end(); ++obj) {
         for (int i = 0; i < obj->nface(); i++) {
-            Vector3i face = obj->get_face(i);
+            Vector3f face = obj->get_face(i);
             std::vector<Vector4f> screen_coords;
             for (int j = 0; j < 3; j++) {
-                screen_coords[j] = this->shader.vert(obj->get_vert(face(i)), j);
+                screen_coords[j] = this->shader.vert(face(j), j);
             }
             draw_triangle(shader, image, screen_coords, zbuffer);
         }

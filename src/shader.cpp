@@ -25,8 +25,6 @@ Vector4f Shader::vert(Vector3f vertex, int nthvert) {
 
     vert4 = uniform_m * vert4;
     // TODO: itensity
-    
-
     return vert4;
 }
 
