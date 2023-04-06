@@ -15,19 +15,26 @@ enum FILE_TYPE {
 class Object {
 private:
     // indexes start from 0
-    std::vector<Vector3f> vertices;
-    std::vector<Vector3i> faces;
+    std::vector<std::vector<Vector3f>> faces;
+    std::vector<std::vector<Vector3f>> normals;
+    std::vector<std::vector<Vector2f>> uvs;
     Vector3f position;
-    // TODO: rotate: up vector
+    // TODO: rotate: up vector (or angle: float)
 public:
     Object();
+    Object(std::vector<float> vertices, std::vector<int> indexes, Vector3f position);
     Object(const char *filename, int filetype);
+
     int nface();
-    int nvert();
-    Vector3f get_vert(int index);
-    Vector3i get_face(int index);
+    std::vector<Vector3f> get_face(int index);
+    // FIX: implement getters
+    std::vector<Vector3f> get_normal(int index);
+    std::vector<Vector2f> get_uv(int index);
+
     Vector3f get_position();
     void set_position(Vector3f position);
+
+    // get model matrix
     Matrix4f get_model();
 };
 

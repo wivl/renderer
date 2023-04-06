@@ -1,31 +1,102 @@
 #include "object.hpp"
 #include <Eigen/src/Core/Matrix.h>
+#include <tiny_obj_loader.h>
+
+#include <iostream>
+
+#define TINYOBJLOADER_IMPLEMENTATION
+
+tinyobj::ObjReaderConfig reader_config;
+tinyobj::ObjReader reader;
 
 Object::Object() {
     this->position << 0.0f, 0.0f, 0.0f;
 }
 
+Object::Object(std::vector<float> vertices, std::vector<int> indexes, Vector3f position) {
+    this->position = position;
+    // FIX: read vector<Vector3f> from vector<float>
+}
+
+
+
 Object::Object(const char *filename, int filetype) {
     this->position << 0.0f, 0.0f, 0.0f;
     // TODO: use library
+    reader_config.mtl_search_path = "./models/";
+
+    if (!reader.ParseFromFile(filename, reader_config)) {
+        if (!reader.Error().empty()) {
+            std::cerr << "TinyObjReader: " << reader.Error();
+        }
+        exit(1);
+    }
+    if (!reader.Warning().empty()) {
+        std::cout << "TinyObjReader: " << reader.Warning();
+    }
+    auto& attrib = reader.GetAttrib();
+    auto& shapes = reader.GetShapes();
+    auto& materials = reader.GetMaterials();
+
+    // for every shape
+    for (size_t s = 0; s < shapes.size(); s++) {
+        size_t index_offset = 0;
+        // for every face
+        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
+            // fv vertices in this face
+            size_t fv = size_t(shapes[s].mesh.num_face_vertices[f]);
+
+            // since faces are all triangles, fv is always equal to 3
+            std::vector<Vector3f> face(3);
+            std::vector<Vector3f> normal(3);
+            std::vector<Vector2f> uv(2);
+            // for every vertex
+            for (size_t v = 0; v < fv; v++) {
+                tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
+                face[v] << attrib.vertices[3*size_t(idx.vertex_index)+0],
+                           attrib.vertices[3*size_t(idx.vertex_index)+1],
+                           attrib.vertices[3*size_t(idx.vertex_index)+2];
+
+
+                // Check if `normal_index` is zero or positive. negative = no normal data
+                if (idx.normal_index >= 0) {
+                    normal[v] << attrib.normals[3*size_t(idx.normal_index)+0],
+                                 attrib.normals[3*size_t(idx.normal_index)+1],
+                                 attrib.normals[3*size_t(idx.normal_index)+2];
+                }
+
+                // Check if `texcoord_index` is zero or positive. negative = no texcoord data
+                if (idx.texcoord_index >= 0) {
+                    uv[v] << attrib.texcoords[2*size_t(idx.texcoord_index)+0],
+                             attrib.texcoords[2*size_t(idx.texcoord_index)+1];
+                }
+
+                // Optional: vertex colors
+                // tinyobj::real_t red   = attrib.colors[3*size_t(idx.vertex_index)+0];
+                // tinyobj::real_t green = attrib.colors[3*size_t(idx.vertex_index)+1];
+                // tinyobj::real_t blue  = attrib.colors[3*size_t(idx.vertex_index)+2];
+            } // for face end
+            this->uvs.push_back(uv);
+            this->normals.push_back(normal);
+            this->faces.push_back(face);
+            index_offset += fv;
+
+            // per-face material
+            shapes[s].mesh.material_ids[f];
+        }
+    }
 }
 
-int Object::nvert() {
-    return vertices.size();
-}
 
 int Object::nface() {
     return faces.size();
 }
 
-// FIX: 3i
-Vector3i Object::get_face(int index) {
+std::vector<Vector3f> Object::get_face(int index) {
     return faces[index];
 }
 
-Vector3f Object::get_vert(int index) {
-    return vertices[index];
-}
+
 
 Vector3f Object::get_position() {
     return position;
