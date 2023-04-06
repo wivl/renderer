@@ -1,6 +1,7 @@
 [requires]
 eigen/3.4.0
 pngpp/0.2.10
+tinyobjloader/2.0.0-rc10
 
 [generators]
 CMakeToolchain
