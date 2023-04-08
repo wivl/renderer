@@ -27,7 +27,6 @@ public:
 
     int nface();
     std::vector<Vector3f> get_face(int index);
-    // FIX: implement getters
     std::vector<Vector3f> get_normal(int index);
     std::vector<Vector2f> get_uv(int index);
 

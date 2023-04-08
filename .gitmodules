@@ -1,0 +1,3 @@
+[submodule "dependencies/ppmpp"]
+	path = dependencies/ppmpp
+	url = https://github.com/wivl/ppmpp.git

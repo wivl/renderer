@@ -2,7 +2,6 @@
 #include <Eigen/src/Core/Matrix.h>
 
 #include <cmath>
-#include <png++/rgb_pixel.hpp>
 #include <vector>
 #include <float.h>
 
@@ -33,8 +32,8 @@ Matrix4f _cal_view(Vector3f position, Vector3f target, Vector3f up) {
 
 Matrix4f _cal_proj(float fovy, float aspect, float near, float far) {
     Matrix4f temp;
-    temp << cot(fovy/2)/aspect, 0,              0,                      0,
-            0,                  cot(fovy/2),    0,                      0,
+    temp << cot(fovy)/2/aspect, 0,              0,                      0,
+            0,                  cot(fovy)/2,    0,                      0,
             0,                  0,              (near+far)/(near-far),  -(2*near*far)/(near-far),
             0,                  0,              1,                      0;
     return temp;
@@ -80,6 +79,29 @@ Camera::Camera(Vector3f position, Vector3f target, Vector3f up, int width, int h
 
     // VIEWPORT
     this->viewport = _cal_viewport(width, height);
+
+    // dev log
+    std::cout << "[LOG]Camera::Camera: view: " << std::endl;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            std::cout << view(i, j) << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << "[LOG]Camera::Camera: projection: " << std::endl;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            std::cout << projection(i, j) << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << "[LOG]Camera::Camera: viewport: " << std::endl;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            std::cout << viewport(i, j) << " ";
+        }
+        std::cout << std::endl;
+    }
 
     // TODO: set shader
    
@@ -194,6 +216,7 @@ void draw_triangle(Shader &shader, png::image<png::rgba_pixel> &image, std::vect
             }
             bool discard = shader.fragment(c, color);
             if (!discard) {
+                std::cout << "[LOG]one dot set" << std::endl;
                 zbuffer[P(1)*image.get_width()+P(0)] = frag_depth;
                 image.set_pixel(P(0), P(1), color);
             }
@@ -210,13 +233,37 @@ void Camera::render(std::vector<Object> obj_list, png::image<png::rgba_pixel> &i
     //              vertex shader
     //          fragment shader
 
+    // for every obj
     for (auto obj = obj_list.begin(); obj != obj_list.end(); ++obj) {
-        for (int i = 0; i < obj->nface(); i++) {
-            Vector3f face = obj->get_face(i);
-            std::vector<Vector4f> screen_coords;
-            for (int j = 0; j < 3; j++) {
-                screen_coords[j] = this->shader.vert(face(j), j);
+        // get uniform matrix
+        
+        shader.set_uniform(viewport * projection * view * obj->get_model());
+
+        std::cout << "[LOG]Camera::render: shader->uniform: " << std::endl;
+        for (int k = 0; k < 4; k++) {
+            for (int l = 0; l < 4; l++) {
+                std::cout << shader.get_uniform()(k, l) << " ";
             }
+            std::cout << std::endl;
+        }
+
+        // for every face
+        for (int i = 0; i < obj->nface(); i++) {
+            std::vector<Vector3f> face(obj->get_face(i));
+            std::vector<Vector4f> screen_coords(3);
+            for (int j = 0; j < 3; j++) {
+                screen_coords[j] = this->shader.vert(face[j], j);
+            }
+
+            // dev log
+            // std::cout << "[LOG]Camera::render: screen_coords: ";
+            // for (int k = 0; k < 3; k++) {
+                // for (int l = 0; l < 3; l++) {
+                    // std::cout << screen_coords[k](l) << " ";
+                // }
+            // }
+            // std::cout << std::endl;
+
             draw_triangle(shader, image, screen_coords, zbuffer);
         }
     }

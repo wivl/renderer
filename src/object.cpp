@@ -3,6 +3,7 @@
 #include <tiny_obj_loader.h>
 
 #include <iostream>
+#include <assert.h>
 
 #define TINYOBJLOADER_IMPLEMENTATION
 
@@ -23,11 +24,11 @@ Object::Object(std::vector<float> vertices, std::vector<int> indexes, Vector3f p
 Object::Object(const char *filename, int filetype) {
     this->position << 0.0f, 0.0f, 0.0f;
     // TODO: use library
-    reader_config.mtl_search_path = "./models/";
+    reader_config.mtl_search_path = "";
 
     if (!reader.ParseFromFile(filename, reader_config)) {
         if (!reader.Error().empty()) {
-            std::cerr << "TinyObjReader: " << reader.Error();
+            std::cerr << "[ERR]TinyObjReader: " << reader.Error();
         }
         exit(1);
     }
@@ -52,6 +53,7 @@ Object::Object(const char *filename, int filetype) {
             std::vector<Vector2f> uv(2);
             // for every vertex
             for (size_t v = 0; v < fv; v++) {
+                assert(fv == 3);
                 tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
                 face[v] << attrib.vertices[3*size_t(idx.vertex_index)+0],
                            attrib.vertices[3*size_t(idx.vertex_index)+1],
@@ -97,6 +99,13 @@ std::vector<Vector3f> Object::get_face(int index) {
 }
 
 
+std::vector<Vector3f> Object::get_normal(int index) {
+    return normals[index];
+}
+
+std::vector<Vector2f> Object::get_uv(int index) {
+    return uvs[index];
+}
 
 Vector3f Object::get_position() {
     return position;
@@ -116,7 +125,7 @@ Matrix4f Object::get_model() {
     Matrix4f Mtranslate = Matrix4f::Identity();
     for (int i = 0; i < 3; i++) {
         // x/w, y/w, z/w
-        Mtranslate(i, 3) = position(i) / position(3);
+        Mtranslate(i, 3) = position(i); /// position(3);
     }
 
     // Scale
@@ -145,9 +154,21 @@ Matrix4f Object::get_model() {
                 0,          0,          0,          1; 
 
     // Rotate
-    Matrix4f Mrotate = MrotateZ * MrotateY * MrotateX;
+    Matrix4f Mrotate = (MrotateZ * MrotateY * MrotateX);
+    Matrix4f temp = (Mrotate*Mscale*Mtranslate);
+    // FIX: column 4 not a number
+    std::cout << "[LOG]Object::get_model: model: " << std::endl;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            std::cout << temp(i, j) << " ";
+        }
+        std::cout << std::endl;
+    }
 
-    return Mrotate*Mscale*Mtranslate;
+
+
+
+    return (Mrotate*Mscale*Mtranslate);
 }
 
 

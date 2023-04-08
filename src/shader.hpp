@@ -3,7 +3,6 @@
 
 #include <Eigen/Dense>
 #include <Eigen/src/Core/Matrix.h>
-#include <png++/png.hpp>
 
 #include <vector>
 
