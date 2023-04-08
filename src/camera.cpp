@@ -217,7 +217,7 @@ void draw_triangle(Shader &shader, ppm::Image &image, std::vector<Vector4f> pts,
             }
             bool discard = shader.fragment(c, color);
             if (!discard) {
-                std::cout << "[LOG]one dot set" << std::endl;
+                std::cout << "[LOG]Camera::render: set " << P(0) << " " << P(1) << std::endl;
                 zbuffer[P(1)*image.get_width()+P(0)] = frag_depth;
                 image.set(P(0), P(1), color);
             }
