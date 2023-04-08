@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 #include <Eigen/src/Core/Matrix.h>
+#include <ppmpp/ppmpp.hpp>
 
 #include <vector>
 
@@ -30,12 +31,9 @@ public:
     void set_uniform(Matrix4f model, Matrix4f view, Matrix4f matrix, Matrix4f viewport);
     Matrix4f get_uniform();
 
-
-
-
     // shaders
     Vector4f vert(Vector3f vertex, int nthvert);
-    bool fragment(Vector3f bar, png::rgba_pixel &color);
+    bool fragment(Vector3f bar, ppm::Color &color);
 
 
 };

@@ -66,7 +66,7 @@ public:
     void set_shader(Shader &shader);
 
     // objects are stored in the list
-    void render(std::vector<Object> obj_list, png::image<png::rgba_pixel> &image, std::vector<float> &zbuffer, Light light);
+    void render(std::vector<Object> obj_list, ppm::Image &image, std::vector<float> &zbuffer, Light light);
 
 
 

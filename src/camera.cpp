@@ -1,4 +1,5 @@
 #include "camera.hpp"
+#include "ppmpp/ppmpp.hpp"
 #include <Eigen/src/Core/Matrix.h>
 
 #include <cmath>
@@ -184,7 +185,7 @@ Vector3f barycentric(Vector2f A, Vector2f B, Vector2f C, Vector2f P) {
     return result;
 }
 
-void draw_triangle(Shader &shader, png::image<png::rgba_pixel> &image, std::vector<Vector4f> pts, std::vector<float> &zbuffer) {
+void draw_triangle(Shader &shader, ppm::Image &image, std::vector<Vector4f> pts, std::vector<float> &zbuffer) {
     // set bounding box
     Vector2f bboxmin, bboxmax;
     bboxmin << std::numeric_limits<float>::max(), std::numeric_limits<float>::max();
@@ -196,7 +197,7 @@ void draw_triangle(Shader &shader, png::image<png::rgba_pixel> &image, std::vect
         }
     }
     Vector2i P;
-    png::rgba_pixel color;
+    ppm::Color color;
 
     for (P(0) = bboxmin(0); P(0) < bboxmax(0); P(0)++) {
         for (P(1) = bboxmin(1); P(1) < bboxmax(1); P(1)++) {
@@ -218,7 +219,7 @@ void draw_triangle(Shader &shader, png::image<png::rgba_pixel> &image, std::vect
             if (!discard) {
                 std::cout << "[LOG]one dot set" << std::endl;
                 zbuffer[P(1)*image.get_width()+P(0)] = frag_depth;
-                image.set_pixel(P(0), P(1), color);
+                image.set(P(0), P(1), color);
             }
 
         }
@@ -226,7 +227,7 @@ void draw_triangle(Shader &shader, png::image<png::rgba_pixel> &image, std::vect
 }
 
 // camera represent's the world. objects are stored in the list
-void Camera::render(std::vector<Object> obj_list, png::image<png::rgba_pixel> &image, std::vector<float> &zbuffer, Light light) {
+void Camera::render(std::vector<Object> obj_list, ppm::Image &image, std::vector<float> &zbuffer, Light light) {
     // for every object
     //      for every face
     //          for every vertex

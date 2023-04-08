@@ -2,13 +2,12 @@
 
 #include <Eigen/src/Core/Matrix.h>
 #include <iostream>
-#include <png++/image.hpp>
-#include <png++/rgba_pixel.hpp>
 #include <vector>
 
 #include "camera.hpp"
 #include "light.hpp"
 #include "object.hpp"
+#include "ppmpp/ppmpp.hpp"
 #include "shader.hpp"
 
 using namespace Eigen;
@@ -16,7 +15,7 @@ using namespace Eigen;
 #define WIDTH 1920
 #define HEIGHT 1080
 
-png::image<png::rgba_pixel> flip_image(png::image<png::rgba_pixel> &image);
+ppm::Image flip_image(ppm::Image &image);
 
 int main(void) {
     // object and object list
@@ -38,7 +37,7 @@ int main(void) {
     Light light(1, 1, 1);
 
     // png
-    png::image<png::rgba_pixel> image(WIDTH, HEIGHT);
+    ppm::Image image(WIDTH, HEIGHT);
 
     std::cout << "this is image speaking" << std::endl;
 
@@ -47,22 +46,22 @@ int main(void) {
 
     camera.render(list, image, zbuffer, light);
 
-    png::image<png::rgba_pixel> flipped = flip_image(image);
+    ppm::Image flipped = flip_image(image);
 
-    flipped.write("output.png");
+    flipped.save("output.ppm");
     
 
 }
 
 // FIX: segment fault
-png::image<png::rgba_pixel> flip_image(png::image<png::rgba_pixel> &image) {
-    png::image<png::rgba_pixel> flipped_image(WIDTH, HEIGHT);
+ppm::Image flip_image(ppm::Image &image) {
+    ppm::Image flipped_image(WIDTH, HEIGHT);
 
     for (int i = 0; i < image.get_height(); i++) {
 		for (int j = 0; j < image.get_width(); j++) {
 			int y = image.get_height() - 1 - i;
 			int x = j;
-			flipped_image[i][j] = image[y][x];
+			flipped_image.set(j, i, image.get(y, x));
 		}
 	}
     return flipped_image;

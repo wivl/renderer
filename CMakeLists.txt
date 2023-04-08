@@ -12,7 +12,12 @@ file(GLOB SRC_FILES
 	"${PROJECT_SOURCE_DIR}/src/*.h"
 	"${PROJECT_SOURCE_DIR}/src/*.c"
 	"${PROJECT_SOURCE_DIR}/src/*.hpp"
-	"${PROJECT_SOURCE_DIR}/src/*.cpp")
+	"${PROJECT_SOURCE_DIR}/src/*.cpp"
+    "${PROJECT_SOURCE_DIR}/dependencies/*.cpp"
+    "${PROJECT_SOURCE_DIR}/dependencies/*.hpp"
+    "${PROJECT_SOURCE_DIR}/dependencies/*.c"
+    "${PROJECT_SOURCE_DIR}/dependencies/*.h"
+    )
 
 add_executable(${CMAKE_PROJECT_NAME} ${SRC_FILES})
 
