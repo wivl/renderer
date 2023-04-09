@@ -187,9 +187,9 @@ Vector3f barycentric(Vector2f A, Vector2f B, Vector2f C, Vector2f P) {
 
 void draw_triangle(Shader &shader, ppm::Image &image, std::vector<Vector4f> pts, std::vector<float> &zbuffer) {
     // set bounding box
-    Vector2f bboxmin, bboxmax;
-    bboxmin << std::numeric_limits<float>::max(), std::numeric_limits<float>::max();
-    bboxmax << -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max();
+    Vector2i bboxmin, bboxmax;
+    bboxmin << image.get_width()-1, image.get_height()-1;
+    bboxmax << 0, 0;
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 2; j++) {
             bboxmin(j) = fminf(bboxmin(j), pts[i](j)/pts[i](3));
@@ -199,8 +199,8 @@ void draw_triangle(Shader &shader, ppm::Image &image, std::vector<Vector4f> pts,
     Vector2i P;
     ppm::Color color;
 
-    for (P(0) = bboxmin(0); P(0) < bboxmax(0); P(0)++) {
-        for (P(1) = bboxmin(1); P(1) < bboxmax(1); P(1)++) {
+    for (P(0) = std::max(bboxmin(0), 0); P(0) <= std::min(bboxmax(0), image.get_width()-1); P(0)++) {
+        for (P(1) = std::max(bboxmin(1), 0); P(1) <= std::min(bboxmax(1), image.get_height()-1); P(1)++) {
             Vector3f c = barycentric(
                     Vector2f({pts[0](0)/pts[0](3), pts[0](1)/pts[0](3)}),
                     Vector2f({pts[1](0)/pts[1](3), pts[1](1)/pts[1](3)}),
@@ -217,6 +217,7 @@ void draw_triangle(Shader &shader, ppm::Image &image, std::vector<Vector4f> pts,
             }
             bool discard = shader.fragment(c, color);
             if (!discard) {
+                // FIX: clip
                 std::cout << "[LOG]Camera::render: set " << P(0) << " " << P(1) << std::endl;
                 zbuffer[P(1)*image.get_width()+P(0)] = frag_depth;
                 image.set(P(0), P(1), color);

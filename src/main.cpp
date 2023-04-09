@@ -19,19 +19,23 @@ ppm::Image flip_image(ppm::Image &image);
 
 int main(void) {
     // object and object list
-    std::vector<Object> list(1);
+    std::vector<Object> list(2);
     Object african_head("./models/african_head.obj", FT_OBJ);
+    african_head.set_position(Vector3f(1, 0, 1));
+    Object diablo3_pose("./models/diablo3_pose.obj", FT_OBJ);
+    diablo3_pose.set_position(Vector3f(-1, 0, -1));
     list.push_back(african_head);
+    list.push_back(diablo3_pose);
 
     // shader
     Shader shader;
     
     // camera
     Vector3f eye, target, up;
-    eye << 0.0f, 2.0f, 1.0f;
+    eye << 0.0f, 0.0f, 4.0f;
     target << 0.0f, 0.0f, 0.0f;
     up << 0.0f, 1.0f, 0.0f;
-    Camera camera(eye, target, up, WIDTH, HEIGHT, 90.0f, float(WIDTH)/HEIGHT, 1.0f, 20.0f);
+    Camera camera(eye, target, up, WIDTH, HEIGHT, 60.0f, float(WIDTH)/HEIGHT, 1.0f, 100.0f);
 
     // light
     Light light(1, 1, 1);
@@ -48,7 +52,7 @@ int main(void) {
 
     ppm::Image flipped = flip_image(image);
 
-    flipped.save("output.ppm");
+    image.save("output.ppm");
     
 
 }
@@ -61,7 +65,7 @@ ppm::Image flip_image(ppm::Image &image) {
 		for (int j = 0; j < image.get_width(); j++) {
 			int y = image.get_height() - 1 - i;
 			int x = j;
-			flipped_image.set(j, i, image.get(y, x));
+			flipped_image.set(j, i, image.get(x, y));
 		}
 	}
     return flipped_image;
