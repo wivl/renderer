@@ -50,7 +50,7 @@ Object::Object(const char *filename, int filetype) {
             // since faces are all triangles, fv is always equal to 3
             std::vector<Vector3f> face(3);
             std::vector<Vector3f> normal(3);
-            std::vector<Vector2f> uv(2);
+            std::vector<Vector2f> uv(3);
             // for every vertex
             for (size_t v = 0; v < fv; v++) {
                 assert(fv == 3);
