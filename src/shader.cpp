@@ -36,10 +36,6 @@ Vector4f Shader::vert(Vertex vertex, int nthvert, Light light) {
 
     if (vertex.hasn()) {
         varying_intensity(nthvert) = std::fmax(0, vertex.get_normal().dot(light.get_dir()));
-        std::cout << "[LOG]Shader::vert: varying intensity: " 
-            << varying_intensity(0) << " "
-            << varying_intensity(1) << " " 
-            << varying_intensity(2) << std::endl; 
     }
 
     if (vertex.hasu()) {

@@ -16,15 +16,15 @@ Object::Object() {
 
 Object::Object(std::vector<float> vertices, std::vector<int> indexes, Vector3f position) {
     this->position = position;
-    // FIX: read vector<Vector3f> from vector<float>
+    // TODO: read vector<Vector3f> from vector<float>
 }
 
 
 
 Object::Object(const char *filename, int filetype) {
     this->position << 0.0f, 0.0f, 0.0f;
-    // TODO: use library
-    reader_config.mtl_search_path = "";
+
+    reader_config.mtl_search_path = "./models/";
 
     if (!reader.ParseFromFile(filename, reader_config)) {
         if (!reader.Error().empty()) {
@@ -89,6 +89,9 @@ Object::Object(const char *filename, int filetype) {
     }
 }
 
+// TODO: texture
+void load_texture(const char * filename);
+ppm::Color get_texture(Vector2f uv);
 
 int Object::nface() {
     return faces.size();
