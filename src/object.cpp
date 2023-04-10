@@ -94,6 +94,14 @@ int Object::nface() {
     return faces.size();
 }
 
+int Object::nnormal() {
+    return normals.size();
+}
+
+int Object::nuv() {
+    return uvs.size();
+}
+
 std::vector<Vector3f> Object::get_face(int index) {
     return faces[index];
 }

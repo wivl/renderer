@@ -26,6 +26,8 @@ public:
     Object(const char *filename, int filetype);
 
     int nface();
+    int nnormal();
+    int nuv();
     std::vector<Vector3f> get_face(int index);
     std::vector<Vector3f> get_normal(int index);
     std::vector<Vector2f> get_uv(int index);

@@ -50,9 +50,12 @@ Matrix4f _cal_viewport(int width, int height) {
 }
 
 Camera::Camera() {
-    position << 0.0f, 0.0f, 0.0f;
+    position << 0.0f, 0.0f, 4.0f;
     target << 0.0f, 0.0f, 0.0f;
     up << 0.0f, 1.0f, 0.0f;
+    fovy = 60.0f;
+    far = 100.0f;
+    near = 1.0f;
 }
 
 
@@ -104,8 +107,6 @@ Camera::Camera(Vector3f position, Vector3f target, Vector3f up, int width, int h
         std::cout << std::endl;
     }
 
-    // TODO: set shader
-   
 }
 
 void Camera::set_position(Vector3f position) {
@@ -210,15 +211,15 @@ void draw_triangle(Shader &shader, ppm::Image &image, std::vector<Vector4f> pts,
             float z = pts[0](2)*c(0) + pts[1](2)*c(1) + pts[2](2)*c(2);
             float w = pts[0](3)*c(0) + pts[1](3)*c(1) + pts[2](3)*c(2);
 
-            int frag_depth = z/w;
+            float frag_depth = z/w;
 
-            if (c(0)<0 || c(1)<0 || c(2)<0 || zbuffer[P(1)*image.get_width()+P(0)] > frag_depth) {
+            // smaller zbuffer means closer
+            if (c(0)<0 || c(1)<0 || c(2)<0 || zbuffer[P(1)*image.get_width()+P(0)] < frag_depth) {
                 continue;
             }
             bool discard = shader.fragment(c, color);
             if (!discard) {
-                // FIX: clip
-                std::cout << "[LOG]Camera::render: set " << P(0) << " " << P(1) << std::endl;
+                std::cout << "[LOG]Camera::render: set " << P(0) << " " << P(1) << " "  << color.get_raw() << std::endl;
                 zbuffer[P(1)*image.get_width()+P(0)] = frag_depth;
                 image.set(P(0), P(1), color);
             }
@@ -251,10 +252,28 @@ void Camera::render(std::vector<Object> obj_list, ppm::Image &image, std::vector
 
         // for every face
         for (int i = 0; i < obj->nface(); i++) {
+            // HACK: may cause segment fault:
+            // + vertex size is judged in vert shader (May change vertex to point struct later)
             std::vector<Vector3f> face(obj->get_face(i));
+            std::vector<Vector3f> normal;
+            std::vector<Vector2f> uv;
+            if (obj->nnormal() != 0) {
+                normal = obj->get_normal(i);
+            }
+            if (obj->nuv() != 0) {
+                uv = obj->get_uv(i);
+            }
+
             std::vector<Vector4f> screen_coords(3);
             for (int j = 0; j < 3; j++) {
-                screen_coords[j] = this->shader.vert(face[j], j);
+                Vertex vertex(face[j]);
+                if (normal.size() != 0) {
+                    vertex.set_normal(normal[j]);
+                }
+                if (uv.size() != 0) {
+                    vertex.set_uv(uv[j]);
+                }
+                screen_coords[j] = this->shader.vert(vertex, j, light);
             }
 
             // dev log
