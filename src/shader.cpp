@@ -1,4 +1,5 @@
 #include "shader.hpp"
+#include "object.hpp"
 #include "ppmpp/ppmpp.hpp"
 
 #include <algorithm>
@@ -25,11 +26,6 @@ Matrix4f Shader::get_uniform() {
 
 // std::vector<VectorXf> vectors: vertices(3), normals(3), uvs(2)
 Vector4f Shader::vert(Vertex vertex, int nthvert, Light light) {
-    // TODO: handle vertex class
-    // - only vert
-    // - vert + normal
-    // - vert + uv
-    // - vert + normal + uv
     
     Vector4f vert4(vertex.get_vert().x(), vertex.get_vert().y(), vertex.get_vert().z(), 1.0f);
     vert4 = uniform_m * vert4;
@@ -39,25 +35,34 @@ Vector4f Shader::vert(Vertex vertex, int nthvert, Light light) {
     }
 
     if (vertex.hasu()) {
-        // TODO: handle uv
+        // TODO: texture
+        varying_uv.col(nthvert) = vertex.get_uv();
+    } else {
+        varying_uv.col(nthvert) << 0.0f, 0.0f;
     }
 
 
     // LOG
-    std::cout << "[LOG]Shader::vert: vert4: ";
-    for (int i = 0; i < 4; i++) {
-        std::cout << vert4(i) << " ";
-    }
-    std::cout << std::endl;
+    // std::cout << "[LOG]Shader::vert: vert4: ";
+    // for (int i = 0; i < 4; i++) {
+        // std::cout << vert4(i) << " ";
+    // }
+    // std::cout << std::endl;
+
 
     return vert4;
 }
 
-bool Shader::fragment(Vector3f bar, ppm::Color &color) {
+bool Shader::fragment(Object &obj, Vector3f bar, ppm::Color &color) {
     // TODO: itensity
     color = ppm::Color(255, 255, 255);
     float intensity = varying_intensity.dot(bar);
     std::cout << "[LOG]Shader::fragment: intensity: " << intensity << std::endl;
+
+    if (!varying_uv.isZero()) {
+        Vector2f uv = varying_uv * bar;
+        color = obj.get_texture(uv);
+    }
     color.intensity(intensity);
     return false;
 }

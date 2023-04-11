@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "light.hpp"
+#include "object.hpp"
 
 using namespace Eigen;
 
@@ -80,6 +81,7 @@ private:
     // TODO: define members
     Matrix4f uniform_m;
     Vector3f varying_intensity;
+    Matrix<float, 2, 3> varying_uv;
 
 
 public:
@@ -94,7 +96,7 @@ public:
     // shaders
     // std::vector<VectorXf> vectors: vertices(3), normals(3), uvs(2)
     Vector4f vert(Vertex vertex, int nthvert, Light light);
-    bool fragment(Vector3f bar, ppm::Color &color);
+    bool fragment(Object &obj, Vector3f bar, ppm::Color &color);
 
 
 };

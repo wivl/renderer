@@ -21,9 +21,13 @@ int main(void) {
     // object and object list
     std::vector<Object> list(2);
     Object african_head("./models/african_head.obj", FT_OBJ);
-    african_head.set_position(Vector3f(-1, 0, 1));
+    african_head.load_texture("./models/african_head_diffuse.ppm");
+    african_head.set_position(Vector3f(-1, 0, -1));
+
     Object diablo3_pose("./models/diablo3_pose.obj", FT_OBJ);
-    diablo3_pose.set_position(Vector3f(1, 0, -1));
+    diablo3_pose.load_texture("./models/diablo3_pose_diffuse.ppm");
+    diablo3_pose.set_position(Vector3f(1, 0, 1));
+
     list.push_back(african_head);
     list.push_back(diablo3_pose);
 
@@ -52,8 +56,6 @@ int main(void) {
     ppm::Image flipped = flip_image(image);
 
     image.save("output.ppm");
-    
-
 }
 
 ppm::Image flip_image(ppm::Image &image) {

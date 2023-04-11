@@ -1,4 +1,5 @@
 #include "camera.hpp"
+#include "object.hpp"
 #include "ppmpp/ppmpp.hpp"
 #include <Eigen/src/Core/Matrix.h>
 
@@ -106,7 +107,6 @@ Camera::Camera(Vector3f position, Vector3f target, Vector3f up, int width, int h
         }
         std::cout << std::endl;
     }
-
 }
 
 void Camera::set_position(Vector3f position) {
@@ -186,7 +186,7 @@ Vector3f barycentric(Vector2f A, Vector2f B, Vector2f C, Vector2f P) {
     return result;
 }
 
-void draw_triangle(Shader &shader, ppm::Image &image, std::vector<Vector4f> pts, std::vector<float> &zbuffer) {
+void draw_triangle(Shader &shader, ppm::Image &image, Object &obj, std::vector<Vector4f> pts, std::vector<float> &zbuffer) {
     // set bounding box
     Vector2i bboxmin, bboxmax;
     bboxmin << image.get_width()-1, image.get_height()-1;
@@ -217,9 +217,9 @@ void draw_triangle(Shader &shader, ppm::Image &image, std::vector<Vector4f> pts,
             if (c(0)<0 || c(1)<0 || c(2)<0 || zbuffer[P(1)*image.get_width()+P(0)] < frag_depth) {
                 continue;
             }
-            bool discard = shader.fragment(c, color);
+            bool discard = shader.fragment(obj, c, color);
             if (!discard) {
-                std::cout << "[LOG]Camera::render: set " << P(0) << " " << P(1) << " "  << color.get_raw() << std::endl;
+                // std::cout << "[LOG]Camera::render: set " << P(0) << " " << P(1) << " "  << color.get_raw() << std::endl;
                 zbuffer[P(1)*image.get_width()+P(0)] = frag_depth;
                 image.set(P(0), P(1), color);
             }
@@ -285,7 +285,7 @@ void Camera::render(std::vector<Object> obj_list, ppm::Image &image, std::vector
             // }
             // std::cout << std::endl;
 
-            draw_triangle(shader, image, screen_coords, zbuffer);
+            draw_triangle(shader, image, *obj, screen_coords, zbuffer);
         }
     }
 }

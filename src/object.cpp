@@ -1,4 +1,5 @@
 #include "object.hpp"
+#include "ppmpp.hpp"
 #include <Eigen/src/Core/Matrix.h>
 #include <tiny_obj_loader.h>
 
@@ -89,9 +90,13 @@ Object::Object(const char *filename, int filetype) {
     }
 }
 
-// TODO: texture
-void load_texture(const char * filename);
-ppm::Color get_texture(Vector2f uv);
+void Object::load_texture(const char * filename) {
+    texture.load(filename);
+}
+
+ppm::Color Object::get_texture(Vector2f uv) {
+    return texture.get_color(uv.x(), uv.y());
+}
 
 int Object::nface() {
     return faces.size();

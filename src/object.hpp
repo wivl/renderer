@@ -21,7 +21,7 @@ private:
     std::vector<std::vector<Vector3f>> normals;
     std::vector<std::vector<Vector2f>> uvs;
     Vector3f position;
-    std::vector<uint32_t> texture;
+    ppm::Image texture;
     // TODO: rotate: up vector (or angle: float)
 public:
     Object();
