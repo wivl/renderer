@@ -42,7 +42,7 @@ int main(void) {
     Camera camera(eye, target, up, WIDTH, HEIGHT, 60.0f, float(WIDTH)/HEIGHT, 1.0f, 100.0f);
 
     // light
-    Light light(1, 1, 1);
+    Light light(-1, 1, 1);
 
     // png
     ppm::Image image(WIDTH, HEIGHT);

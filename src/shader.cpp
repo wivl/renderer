@@ -59,10 +59,13 @@ bool Shader::fragment(Object &obj, Vector3f bar, ppm::Color &color) {
     float intensity = varying_intensity.dot(bar);
     std::cout << "[LOG]Shader::fragment: intensity: " << intensity << std::endl;
 
-    if (!varying_uv.isZero()) {
-        Vector2f uv = varying_uv * bar;
-        color = obj.get_texture(uv);
-    }
+    // FIX: if uv doesn't exits
+    // if (!varying_uv.isZero()) {
+    Vector2f uv = varying_uv * bar;
+    std::cout << uv << std::endl;
+    color = obj.get_texture(uv);
+    std::cout << color.get_raw() << std::endl;
+    // }
     color.intensity(intensity);
     return false;
 }

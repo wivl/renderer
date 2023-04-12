@@ -92,10 +92,11 @@ Object::Object(const char *filename, int filetype) {
 
 void Object::load_texture(const char * filename) {
     texture.load(filename);
+    texture.vflip();
 }
 
 ppm::Color Object::get_texture(Vector2f uv) {
-    return texture.get_color(uv.x(), uv.y());
+    return texture.get_color(uv.x()*texture.get_width(), uv.y()*texture.get_height());
 }
 
 int Object::nface() {
