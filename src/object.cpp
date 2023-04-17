@@ -173,7 +173,7 @@ Matrix4f Object::get_model() {
     // Rotate
     Matrix4f Mrotate = (MrotateZ * MrotateY * MrotateX);
     Matrix4f temp = (Mrotate*Mscale*Mtranslate);
-    // FIX: column 4 not a number
+
     std::cout << "[LOG]Object::get_model: model: " << std::endl;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {

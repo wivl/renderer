@@ -252,8 +252,6 @@ void Camera::render(std::vector<Object> obj_list, ppm::Image &image, std::vector
 
         // for every face
         for (int i = 0; i < obj->nface(); i++) {
-            // HACK: may cause segment fault:
-            // + vertex size is judged in vert shader (May change vertex to point struct later)
             std::vector<Vector3f> face(obj->get_face(i));
             std::vector<Vector3f> normal;
             std::vector<Vector2f> uv;

@@ -11,7 +11,7 @@ class Light {
 private:
     Vector3f dir;
 public:
-    Light(Vector3f dir);
+    Light(Vector3f dir): dir(dir) {}
     Light(float dx, float dy, float dz);
 
     Vector3f get_dir();

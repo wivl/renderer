@@ -5,10 +5,6 @@ Light::Light(float dx, float dy, float dz) {
     dir << dx, dy, dz;
 }
 
-Light::Light(Vector3f dir) {
-    this->dir = dir;
-}
-
 Vector3f Light::get_dir() {
     return dir;
 }

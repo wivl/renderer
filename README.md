@@ -6,10 +6,10 @@ Me learning computer graphics by cloning [ssloy/tinyrenderer](https://github.com
 
 |items|status|
 |-----|------|
-|Rewrite codebase in C++|W|
-|try conan packge manager|W|
-|switch tinytga to stb|W|
-|~~Add ambient occlusion~~|N|
+|bilinear interpolation|W|
+|mipmap generator|W|
+|anisotropic filtering|W|
+|renderconfig json|W|
 
 ## Dependancies
 
@@ -18,7 +18,6 @@ Me learning computer graphics by cloning [ssloy/tinyrenderer](https://github.com
 
 ## setup
 
-Using conan package manager.
 
 ```
 pip3 install conan
